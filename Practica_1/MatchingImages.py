@@ -3,8 +3,10 @@
 
 import cv2
 
-imageName = input("Source image: ")
-targetName = input("Target to search: ")
+IMAGES_PATH = "../Images/"
+
+imageName = IMAGES_PATH + input("Source image: ")
+targetName = IMAGES_PATH + input("Target to search: ")
 detectionThreshold = input("Detection threshold: ")
 
 originalImage = cv2.imread(imageName, cv2.IMREAD_COLOR)
