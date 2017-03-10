@@ -2,19 +2,24 @@
 # Realitat aumentada practica 1
 
 import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+from PyFiles.convolutionKernel import applyKernel
 
 IMAGES_PATH = "../Images/"
 
-imageName = IMAGES_PATH + input("Source image: ")
-targetName = IMAGES_PATH + input("Target to search: ")
-detectionThreshold = input("Detection threshold: ")
+#imageName = IMAGES_PATH + input("Source image: ")
+#targetName = IMAGES_PATH + input("Target to search: ")
+#detectionThreshold = input("Detection threshold: ")
 
-originalImage = cv2.imread(imageName, cv2.IMREAD_COLOR)
-targetImage = cv2.imread(targetName, cv2.IMREAD_COLOR)
+imageName = IMAGES_PATH+'img1.png'
+targetName = IMAGES_PATH+'t1-img1.png'
 
-cv2.imshow("Original image: " + imageName, originalImage)
-cv2.imshow("Target image: " + targetName, targetImage)
+img = cv2.imread(imageName, cv2.IMREAD_GRAYSCALE)
+template = cv2.imread(targetName, cv2.IMREAD_GRAYSCALE)
 
-k = cv2.waitKey(0)
-if k == 27:
-    cv2.destroyAllWindows()
+res = cv2.matchTemplate(img,template,0)
+
+plt.subplot(1,1,1), plt.imshow(res, cmap = 'gray')
+plt.title('Matching map'), plt.xticks([]), plt.yticks([])
+plt.show()
