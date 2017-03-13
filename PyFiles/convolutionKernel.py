@@ -16,10 +16,47 @@ def applyKernel(posX, posY, inputImg, kernel):
 
     for i in range(-limitRows, limitRows+1):
         for j in range(-limitCols, limitCols+1):
-            if posX+i >= 0 and posX+i < r and posY+j >=0 and posY+j < c: 
-                pixelValue += inputImg[posX+i][posY+j]*kernel[i+limitRows][j+limitCols] 
+            if posX + i >= 0 and posX + i < r and posY + j >= 0 and posY + j < c:
+                pixelValue += inputImg[posX + i][posY + j] * kernel[i + limitRows][j + limitCols]
 
     return pixelValue
+
+def squaredDifference(posX, posY, input_image, target_image):
+
+    pixel_value = 0.0
+
+    rT, cT = target_image.shape
+    r, c = input_image.shape
+    matching_map_res = (r - rT + 1, c - cT + 1)
+
+    #limitRows = int(matching_map_res[0] / 2)
+    #limitCols = int(matching_map_res[1] / 2)
+    limitRows = int(rT / 2)
+    limitCols = int(cT / 2)
+
+    for i in range(-limitRows, limitRows+1):
+        for j in range(-limitCols, limitCols+1):
+            #if posX+i >= 0 and posX+i < r and posY+j >=0 and posY+j < c:
+            pixel_value += pow((target_image[limitRows + i][limitCols + j] - input_image[posX + i][posY + j]), 2)
+            #print pixel_value
+
+    return pixel_value
+
+def getMatchingMap(input_image, target_image):
+
+    rT, cT = target_image.shape
+    r, c = input_image.shape
+    matching_map_res = (r - rT + 1, c - cT + 1)
+
+    matching_map = np.zeros(shape=(matching_map_res[0], matching_map_res[1]))
+    limitRows = int(matching_map_res[0] / 2)
+    limitCols = int(matching_map_res[1] / 2)
+
+    for i in range(-limitRows, limitRows):
+        for j in range(-limitCols, limitCols):
+            matching_map[i + limitRows][j + limitCols] = squaredDifference(i + limitRows, j + limitCols, input_image , target_image)
+    return matching_map
+
 '''
 # Read input image in grayscale
 filename = input("Introduce Image: ")
