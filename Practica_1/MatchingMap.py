@@ -23,9 +23,13 @@ def getMatchingMapPixelValue(matchingMapPosX, matchingMapPosY, originalImage, ta
 #----------------------------------------------------------
 #Loading images.
 
+if input("Default image path is: " + IMAGES_PATH + "\nDo you want to change it? (y/n): ") == "y":
+    IMAGES_PATH = input("New images path: ")
+
 """imageName = input("Source image: ")
 targetName = input("TargetImage: ")
-detectionThreshold = input("Detection threshold: ")"""
+detectionThreshold = input("Detection threshold: ")
+"""
 imageName = "img3.jpg"
 targetName = "t1-img3.jpg"
 detectionThreshold = 0.1
@@ -71,8 +75,7 @@ if numOfMatches > 0:
     cv2.putText(imgFound, "TARGETS FOUND: " + str(numOfMatches), (5, 30), font, 1, (0, 255, 0), 2)
     for n in range(0, len(matchings)):
         print "Point " + str(n) +": " + str(matchings[n][0]) + ", " + str(matchings[n][1])
-        matchingPoint = (matchings[n][0] + targetImageSize[0] / 2, matchings[n][1] + targetImageSize[1] / 2)
-        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchingPoint[0] + targetImage.shape[1] / 2, matchingPoint[1] + targetImage.shape[0] / 2), 0, 2) #Here with target size have the same issue as before. Have switched the size between x and y...
+        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchings[n][0] + targetImageSize[1], matchings[n][1] + targetImageSize[0]), 0, 2)
 
 else:
     cv2.putText(imgFound, "TARGET NOT FOUND", (5, 30), font, 1, (255, 0, 0), 2)
@@ -84,13 +87,15 @@ for i in range(0, matchingMap.shape[0]):
         matchingMap[i][j] = matchingMap[i][j] / maxValue
 
 
-cv2.imshow("Result", imgFound)
+#----------------------------------------------------------
+#Display
+
 cv2.imshow("Original image: " + imageName, originalImageColor)
 cv2.imshow("Target image: " + targetName, targetImageColor)
-
 cv2.imshow("Matching map", matchingMap)
 
-#----------------------------------------------------------
+cv2.imshow("Result", imgFound)
+
 
 k = cv2.waitKey(0)
 
