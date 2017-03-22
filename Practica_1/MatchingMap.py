@@ -30,15 +30,18 @@ if input("Default image path is: " + IMAGES_PATH + "\nDo you want to change it? 
 targetName = input("TargetImage: ")
 detectionThreshold = input("Detection threshold: ")
 """
-imageName = "img3.jpg"
-targetName = "t1-img3.jpg"
+imageName = "img1.png"
+targetName = "t1-img1.png"
 detectionThreshold = 0.1
-
-originalImage = cv2.imread(IMAGES_PATH + imageName, cv2.IMREAD_GRAYSCALE)
-targetImage = cv2.imread(IMAGES_PATH + targetName, cv2.IMREAD_GRAYSCALE)
 
 originalImageColor = cv2.imread(IMAGES_PATH + imageName, cv2.IMREAD_COLOR)
 targetImageColor = cv2.imread(IMAGES_PATH + targetName, cv2.IMREAD_COLOR)
+
+originalImageBig = cv2.imread(IMAGES_PATH + imageName, cv2.IMREAD_GRAYSCALE)
+targetImageBig = cv2.imread(IMAGES_PATH + targetName, cv2.IMREAD_GRAYSCALE)
+
+originalImage = cv2.resize(originalImageBig, (0, 0), fx=0.5, fy=0.5)
+targetImage = cv2.resize(targetImageBig, (0, 0), fx=0.5, fy=0.5)
 
 #----------------------------------------------------------
 #Actually calculating matching map.
@@ -61,7 +64,7 @@ if minValue / maxValue <= detectionThreshold:
     for i in range(0, matchingMap.shape[0]):
         for j in range(0, matchingMap.shape[1]):
             if matchingMap[i][j] == minValue:
-                matchings.append((j, i))  #NOTE: If i append i, j cords are wrong. Cant understand why
+                matchings.append((j*2, i*2))  #NOTE: If i append i, j cords are wrong. Cant understand why
 
 numOfMatches = len(matchings)
 
@@ -75,7 +78,7 @@ if numOfMatches > 0:
     cv2.putText(imgFound, "TARGETS FOUND: " + str(numOfMatches), (5, 30), font, 1, (0, 255, 0), 2)
     for n in range(0, len(matchings)):
         print "Point " + str(n) +": " + str(matchings[n][0]) + ", " + str(matchings[n][1])
-        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchings[n][0] + targetImageSize[1], matchings[n][1] + targetImageSize[0]), 0, 2)
+        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchings[n][0] + targetImageSize[1] * 2, matchings[n][1] + targetImageSize[0] * 2), 0, 2)
 
 else:
     cv2.putText(imgFound, "TARGET NOT FOUND", (5, 30), font, 1, (255, 0, 0), 2)
