@@ -16,7 +16,7 @@ def getMatchingMapPixelValue(matchingMapPosX, matchingMapPosY, originalImage, ta
 
     for i in range(0, targetImage.shape[0]):
         for j in range(0, targetImage.shape[1]):
-            pixelResult += pow((int((originalImage[matchingMapPosX + i][matchingMapPosY + j]) - int(targetImage[i][j]))), 2)
+            pixelResult += pow((int(targetImage[i][j]) - int((originalImage[matchingMapPosX + i][matchingMapPosY + j]))), 2)
 
     return pixelResult
 
@@ -26,22 +26,34 @@ def getMatchingMapPixelValue(matchingMapPosX, matchingMapPosY, originalImage, ta
 if input("Default image path is: " + IMAGES_PATH + "\nDo you want to change it? (y/n): ") == "y":
     IMAGES_PATH = input("New images path: ")
 
-"""imageName = input("Source image: ")
+imageName = input("Source image: ")
 targetName = input("TargetImage: ")
 detectionThreshold = input("Detection threshold: ")
-"""
-imageName = "img1.png"
-targetName = "t1-img1.png"
-detectionThreshold = 0.1
+
+"""imageName = "img1.png"
+targetName = "t2-img1.png"
+detectionThreshold = 0.1"""
+
+scale = 1
+
+if input("For optimitzation purposes we can resize the images in order to speed up the search, by default scale is 1.\nIf you rescale the image a false positive might be found, do this at your own risk. \nDo you want to change the scale? (y/n):" ) == "y":
+    scale = input("Scale: ")
+
+sclRatio = 1/scale
 
 originalImageColor = cv2.imread(IMAGES_PATH + imageName, cv2.IMREAD_COLOR)
 targetImageColor = cv2.imread(IMAGES_PATH + targetName, cv2.IMREAD_COLOR)
 
+#Once images are loaded check if target dimensions are fine.
+if originalImageColor.shape[0] < targetImageColor.shape[0] or originalImageColor.shape[1] < targetImageColor.shape[1]:
+    print "ERROR: Target image is bigger than original image."
+    exit()
+
 originalImageBig = cv2.imread(IMAGES_PATH + imageName, cv2.IMREAD_GRAYSCALE)
 targetImageBig = cv2.imread(IMAGES_PATH + targetName, cv2.IMREAD_GRAYSCALE)
 
-originalImage = cv2.resize(originalImageBig, (0, 0), fx=0.5, fy=0.5)
-targetImage = cv2.resize(targetImageBig, (0, 0), fx=0.5, fy=0.5)
+originalImage = cv2.resize(originalImageBig, (0, 0), fx=scale, fy=scale)
+targetImage = cv2.resize(targetImageBig, (0, 0), fx=scale, fy=scale)
 
 #----------------------------------------------------------
 #Actually calculating matching map.
@@ -60,11 +72,11 @@ for i in range(0, matchingMapSize[0]):
 maxValue = matchingMap.max()
 minValue = matchingMap.min()
 matchings = []
-if minValue / maxValue <= detectionThreshold:
+if (minValue / maxValue) <= detectionThreshold:
     for i in range(0, matchingMap.shape[0]):
         for j in range(0, matchingMap.shape[1]):
             if matchingMap[i][j] == minValue:
-                matchings.append((j*2, i*2))  #NOTE: If i append i, j cords are wrong. Cant understand why
+                matchings.append((int(j*sclRatio), int(i*sclRatio)))  #NOTE: If i append i, j cords are wrong. Cant understand why
 
 numOfMatches = len(matchings)
 
@@ -78,7 +90,7 @@ if numOfMatches > 0:
     cv2.putText(imgFound, "TARGETS FOUND: " + str(numOfMatches), (5, 30), font, 1, (0, 255, 0), 2)
     for n in range(0, len(matchings)):
         print "Point " + str(n) +": " + str(matchings[n][0]) + ", " + str(matchings[n][1])
-        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchings[n][0] + targetImageSize[1] * 2, matchings[n][1] + targetImageSize[0] * 2), 0, 2)
+        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchings[n][0] + targetImageBig.shape[1], matchings[n][1] + targetImageBig.shape[0]), 0, 2)
 
 else:
     cv2.putText(imgFound, "TARGET NOT FOUND", (5, 30), font, 1, (255, 0, 0), 2)
