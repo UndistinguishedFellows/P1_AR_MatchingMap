@@ -1,3 +1,8 @@
+#Realitat aumentada. Practica 1. CITM(UPC)
+#Aleix Cardona
+#Josep Casanovas
+#Github: https://github.com/UndistinguishedFellows/RealitatAumentadaPractiques
+
 import cv2
 import numpy as np
 
