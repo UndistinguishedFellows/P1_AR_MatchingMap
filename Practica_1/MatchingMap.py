@@ -4,7 +4,7 @@ import numpy as np
 
 #----------------------------------------------------------
 #CONSTATNS:
-IMAGES_PATH = "../Images/"
+IMAGES_PATH = "Images/"
 
 #----------------------------------------------------------
 #FUNCTIONS:
@@ -16,22 +16,22 @@ def getMatchingMapPixelValue(matchingMapPosX, matchingMapPosY, originalImage, ta
 
     for i in range(0, targetImage.shape[0]):
         for j in range(0, targetImage.shape[1]):
-            pixelResult += pow((int((originalImage[matchingMapPosX + i][matchingMapPosY + j]) - int(targetImage[i][j]))), 2)
+            pixelResult += pow((int(targetImage[i][j]) - int((originalImage[matchingMapPosX + i][matchingMapPosY + j]))), 2)
 
     return pixelResult
 
 #----------------------------------------------------------
 #Loading images.
-
+"""
 if input("Default image path is: " + IMAGES_PATH + "\nDo you want to change it? (y/n): ") == "y":
     IMAGES_PATH = input("New images path: ")
-
+"""
 """imageName = input("Source image: ")
 targetName = input("TargetImage: ")
 detectionThreshold = input("Detection threshold: ")
 """
-imageName = "img1.png"
-targetName = "t1-img1.png"
+imageName = "img2.png"
+targetName = "t2-img2.png"
 detectionThreshold = 0.1
 
 originalImageColor = cv2.imread(IMAGES_PATH + imageName, cv2.IMREAD_COLOR)
@@ -60,11 +60,11 @@ for i in range(0, matchingMapSize[0]):
 maxValue = matchingMap.max()
 minValue = matchingMap.min()
 matchings = []
-if minValue / maxValue <= detectionThreshold:
+if float(minValue / maxValue) <= detectionThreshold:
     for i in range(0, matchingMap.shape[0]):
         for j in range(0, matchingMap.shape[1]):
             if matchingMap[i][j] == minValue:
-                matchings.append((j*2, i*2))  #NOTE: If i append i, j cords are wrong. Cant understand why
+                matchings.append((j *2, i *2))  #NOTE: If i append i, j cords are wrong. Cant understand why
 
 numOfMatches = len(matchings)
 
@@ -78,7 +78,7 @@ if numOfMatches > 0:
     cv2.putText(imgFound, "TARGETS FOUND: " + str(numOfMatches), (5, 30), font, 1, (0, 255, 0), 2)
     for n in range(0, len(matchings)):
         print "Point " + str(n) +": " + str(matchings[n][0]) + ", " + str(matchings[n][1])
-        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchings[n][0] + targetImageSize[1] * 2, matchings[n][1] + targetImageSize[0] * 2), 0, 2)
+        cv2.rectangle(originalImageColor, (matchings[n][0], matchings[n][1]), (matchings[n][0] + targetImageBig.shape[1], matchings[n][1] + targetImageBig.shape[0] ), 0, 2)
 
 else:
     cv2.putText(imgFound, "TARGET NOT FOUND", (5, 30), font, 1, (255, 0, 0), 2)
